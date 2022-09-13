@@ -5,10 +5,11 @@ import styles from './ImageGalleryItem.module.css';
 export class ImageGalleryItem extends Component {
 
     render() {
-        const {webformatURL, user} = this.props.element
+        const { idx, webformatURL, toggleModal } = this.props;
+
         return (
             <li className={styles.galleryItem} >
-                <img src={webformatURL} alt={user} />
+                <img id={idx} src={webformatURL} alt="depiction from set" onClick={toggleModal} />
             </li>
         );
     };
