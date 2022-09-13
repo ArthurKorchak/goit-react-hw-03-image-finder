@@ -19,20 +19,25 @@ class App extends Component {
     isLoading: false,
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     this.getPhotos();
   };
 
-  onSubmit = async (event) => {
+  componentDidUpdate(prevProps, prevState) {
+    const { serachWord, page } = this.state;
+    if (prevState.page !== page || prevState.serachWord !== serachWord) {
+          this.getPhotos();
+    }
+  };
+
+  onSubmit = (event) => {
     event.preventDefault();
-    await this.setState({ serachWord: event.target[1].value, page: 1, images: [], isEndOfGallery: false });
-    this.getPhotos();
+    this.setState({ serachWord: event.target[1].value, page: 1, images: [], isEndOfGallery: false });
     event.target.reset();
   };
 
-  pageOperator = async () => {
-    await this.setState(prevState => { return { page: prevState.page + 1 } });
-    this.getPhotos();
+  pageOperator = () => {
+    this.setState(prevState => { return { page: prevState.page + 1 } });
   };
 
   getPhotos = async () => {
@@ -60,14 +65,15 @@ class App extends Component {
   };
 
   render() {
+    const { images, largeImage, isModalOpen, isLoading, isEndOfGallery } = this.state;
     return (
       <div className={styles.app}>
         <Searchbar onSubmit={this.onSubmit} />
-        {this.state.images.length > 0 && <ImageGallery images={this.state.images} toggleModal={this.toggleModal} />}
-        {!this.state.images.length > 0 && <img src={noFound} alt="depiction no found" style={{margin: "auto", maxWidth: "600px"}} />}
-        {this.state.images.length > 0 && !this.state.isEndOfGallery && <Button pageOperator={this.pageOperator} />}
-        {this.state.isModalOpen && <Modal image={this.state.largeImage} toggleModal={this.toggleModal} />}
-        {this.state.isLoading && <Loader />}
+        {images.length > 0 && <ImageGallery images={images} toggleModal={this.toggleModal} />}
+        {!images.length > 0 && <img src={noFound} alt="depiction no found" style={{margin: "auto", maxWidth: "600px"}} />}
+        {images.length > 0 && !isEndOfGallery && <Button pageOperator={this.pageOperator} />}
+        {isModalOpen && <Modal image={largeImage} toggleModal={this.toggleModal} />}
+        {isLoading && <Loader />}
       </div>
     );
   };
