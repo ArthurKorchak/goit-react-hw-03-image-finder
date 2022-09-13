@@ -1,11 +1,12 @@
-import { Component } from "react";
 import styles from './Button.module.css';
+import PropTypes from 'prop-types';
 
-export class Button extends Component {
+export function Button({pageOperator}) {
+    return (
+        <button className={styles.button} onClick={pageOperator}>Load more</button>
+    );
+};
 
-    render() {
-        return (
-            <button className={styles.button} onClick={this.props.pageOperator}>Load more</button>
-        );
-    };
+Button.propTypes = {
+    pageOperator: PropTypes.func.isRequired,
 };

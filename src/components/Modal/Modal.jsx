@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
+import PropTypes from 'prop-types';
 
 export class Modal extends Component {
 
@@ -19,7 +20,6 @@ export class Modal extends Component {
     };
 
     render() {
-
         return createPortal(
             <div className={styles.overlay} onClick={this.props.toggleModal}>
                 <div className={styles.modal}>
@@ -29,4 +29,9 @@ export class Modal extends Component {
             document.getElementById('portal')
         );
     };
+};
+
+Modal.propTypes = {
+    toggleModal: PropTypes.func.isRequired,
+    image: PropTypes.string.isRequired,
 };

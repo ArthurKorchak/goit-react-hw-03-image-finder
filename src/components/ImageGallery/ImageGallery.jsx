@@ -1,17 +1,22 @@
-import { Component } from "react";
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import styles from './ImageGallery.module.css';
+import PropTypes from 'prop-types';
 
-export class ImageGallery extends Component {
+export function ImageGallery({images, toggleModal}) {
+    return (
+        <ul className={styles.gallery}>
+            {images.map((element, idx) => 
+                <ImageGalleryItem key={idx} webformatURL={element.webformatURL} idx={idx} toggleModal={toggleModal} />
+            )}
+        </ul>
+    );
+};
 
-    render() {
-
-        return (
-            <ul className={styles.gallery}>
-                {this.props.images.map((element, idx) => 
-                    <ImageGalleryItem key={idx} webformatURL={element.webformatURL} idx={idx} toggleModal={this.props.toggleModal} />
-                )}
-            </ul>
-        );
-    };
+ImageGallery.propTypes = {
+    images: PropTypes.arrayOf(
+        PropTypes.shape({
+            webformatURL: PropTypes.string.isRequired,
+        }),
+    ),
+    toggleModal: PropTypes.func.isRequired,
 };

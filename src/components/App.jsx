@@ -5,6 +5,7 @@ import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
 import { requesterAPI } from './services/requesterAPI';
+import noFound from './images/no-found.png';
 import styles from './App.module.css';
 
 class App extends Component {
@@ -13,6 +14,7 @@ class App extends Component {
     page: 1,
     images: [],
     largeImage: '',
+    isEndOfGallery: false,
     isModalOpen: false,
     isLoading: false,
   };
@@ -23,7 +25,7 @@ class App extends Component {
 
   onSubmit = async (event) => {
     event.preventDefault();
-    await this.setState({ serachWord: event.target[1].value, page: 1, images: [] });
+    await this.setState({ serachWord: event.target[1].value, page: 1, images: [], isEndOfGallery: false });
     this.getPhotos();
     event.target.reset();
   };
@@ -34,10 +36,14 @@ class App extends Component {
   };
 
   getPhotos = async () => {
+    this.setState({ isLoading: true });
     try {
       requesterAPI(this.state.serachWord, this.state.page)
         .then(response => {
-          this.setState(prevState => ({ images: [...prevState.images, ...response.hits] }));
+          this.setState(prevState => ({
+            images: [...prevState.images, ...response.hits],
+            isEndOfGallery: prevState.images.length + response.hits.length === response.totalHits
+          }));
         });
     } catch (error) {
       console.log(error);
@@ -46,10 +52,10 @@ class App extends Component {
     };
   };
 
-  toggleModal = async (event) => {
+  toggleModal = event => {
     if (event.target === event.currentTarget || event.code ) {
       const imgPath = event.target.id ? this.state.images[event.target.id].largeImageURL : '';
-      await this.setState(prevValue => ({ isModalOpen: !prevValue.isModalOpen, largeImage: imgPath }));
+      this.setState(prevValue => ({ isModalOpen: !prevValue.isModalOpen, largeImage: imgPath }));
     };
   };
 
@@ -57,9 +63,10 @@ class App extends Component {
     return (
       <div className={styles.app}>
         <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery images={this.state.images} toggleModal={this.toggleModal} />
-        <Button pageOperator={this.pageOperator} />
-        {this.state.isModalOpen && <Modal image={this.state.largeImage} toggleModal={this.toggleModal}/>}
+        {this.state.images.length > 0 && <ImageGallery images={this.state.images} toggleModal={this.toggleModal} />}
+        {!this.state.images.length > 0 && <img src={noFound} alt="depiction no found" style={{margin: "auto", maxWidth: "600px"}} />}
+        {this.state.images.length > 0 && !this.state.isEndOfGallery && <Button pageOperator={this.pageOperator} />}
+        {this.state.isModalOpen && <Modal image={this.state.largeImage} toggleModal={this.toggleModal} />}
         {this.state.isLoading && <Loader />}
       </div>
     );
